@@ -1,0 +1,6 @@
+Django
+psycpg3
+requests
+lxml
+django-lazysignup
+git+git://github.com/dcramer/django-devserver#egg=django-devserver
