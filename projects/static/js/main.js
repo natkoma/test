@@ -32,7 +32,7 @@ function name() {
         http_request.onreadystatechange = function() { // Ждём ответа от сервера
             if (http_request.readyState == 4) { // Ответ пришёл
                 if(http_request.status == 200) { // Сервер вернул код 200 (что хорошо)
-                    // location.reload();
+                    location.reload();
                 }
             }
         };
@@ -102,12 +102,13 @@ function activate_chat(thread_id, user_id, user_name) {
         http_request.onreadystatechange = function() { // Ждём ответа от сервера
             if (http_request.readyState == 4) { // Ответ пришёл
                 if(http_request.status == 200) { // Сервер вернул код 200 (что хорошо)
-                    textarea.val(""); // Выводим ответ сервера
+                    show();
+                    scroll_chat_window();
                 }
             }
         };
-
         http_request.send(data);
+
         show();
         scroll_chat_window();
     }
