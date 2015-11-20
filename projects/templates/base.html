@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html>
+<head>
+{% load staticfiles %}
+<link rel="stylesheet" href="projects/static/lib/bootstrap/css/bootstrap.min.css">
+<link rel="stylesheet" href="projects/static/lib/bootstrap/css/bootstrap-responsive.min.css">
+<link rel="stylesheet" href="projects/static/css/style.css">
+
+<script type="text/javascript" src="{% static "js/jquery-1.9.1.min.js" %}"></script>
+<script type="text/javascript" src="{% static "js/main.js" %}"></script>
+{% block head %}{% endblock %}
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<title>{% block title %}Тест{% endblock title %}</title>
+</head>
+<body>
+{% block content %}{% endblock content %}
+</body>
+</html>

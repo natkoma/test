@@ -1,0 +1,7 @@
+{% for message in messages reversed %}
+    <div class="message"> 
+        <address>{% if message.sender == user %}<span class="datetime">{{ message.datetime|date:"d.m.Y H:i:s" }}</span> {{ user.last_name }}{% else %}<span class="datetime">{{ message.datetime|date:"d.m.Y H:i:s" }}</span> Бот{% endif %}</address>
+        <span>{{ message.text|linebreaksbr }}</span>
+    </div>
+{% endfor %}
+
