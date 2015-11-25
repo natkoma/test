@@ -1,125 +1,86 @@
-
-function getXmlHttpRequest(){
-    var xmlhttp;
-    try {
-        xmlhttp = new ActiveXObject("Msxml2.XMLHTTP");
-    } catch (e) {
-        try {
-            xmlhttp = new ActiveXObject("Microsoft.XMLHTTP");
-        } catch (E) {
-            xmlhttp = false;
-        }
-    }
-    if (!xmlhttp && typeof XMLHttpRequest!='undefined') {
-        xmlhttp = new XMLHttpRequest();
-    }
-    return xmlhttp;
-}
-
-
 function name() {
     function save_name() {
-        var textarea = $("input#id_user");
+        var textarea = $("#id_user");
         if (textarea.val() == "") {
             return false;
         }
 
-        var data = "user_name="+textarea.val();
-
-        var http_request = new getXmlHttpRequest();
-        http_request.open('POST', '/save_name/', true);
-        http_request.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded, charset=utf-8');
-        http_request.onreadystatechange = function() { // Ждём ответа от сервера
-            if (http_request.readyState == 4) { // Ответ пришёл
-                if(http_request.status == 200) { // Сервер вернул код 200 (что хорошо)
-                    location.reload();
-                }
+        $.ajax({
+            url: "/save_name/",
+            type: "POST",
+            cache: false,
+            data: {"user_name": textarea.val()},
+            success: function() {
+                location.reload();
             }
-        };
-        http_request.send(data);
+        })
 
     }
 
     $("button").click(save_name);
     
-    $("input#id_user").keydown(function (e) {
+    $("#id_user").keydown(function (e) {
         // Enter
         if (e.keyCode == 13) {
             save_name();
+            e.preventDefault();
         }
     });
 }
 
 function activate_chat(thread_id, user_id, user_name) {
-    $("div#chat form#chat-form div#compose input#id_text").focus();
+    $("#id_text").focus();
 
     function scroll_chat_window() {
-        $("div#chat div#chat-messages").scrollTop($("div#chat div#chat-messages")[0].scrollHeight);
+        $("#chat-messages").scrollTop($("#chat-messages")[0].scrollHeight);
     }
 
     scroll_chat_window();
 
-    var chat_messages_html;
+    var last_time = new Date().getTime();
 
-    function show() {  
-        $.ajax({  
-            url: "messages_view/?limit=20",
-            type:"GET",
-            async: false,
-            cache: false,  
-            success: function(html){  
-                if (chat_messages_html != html){
-                    $("div#chat div#chat-messages").html(html);
+    (function poll() {
+        setTimeout(function() {
+            $.ajax({
+                url: "messages_view/",
+                data: {'since': last_time},
+                cache: false,
+                success: function(html){  
+                    $("#chat-messages").append(html);
                     scroll_chat_window();
-                    chat_messages_html = html;
-                };
-            }  
-        });  
-    }  
-  
-    $(document).ready(function(){  
-        setInterval(show, 3000);  
-    });
+
+                    last_time = new Date().getTime();
+                },
+                complete: poll
+            });
+        }, 1000);
+    })();
 
     function send_message() {
         
-        var textarea = $("input#id_text");
+        var textarea = $("#id_text");
         if (textarea.val() == "") {
             return false;
         }
 
-        var data = "";
-
-        data = "thread_id="+thread_id+"&";
-        data += "user_id="+user_id+"&";
-        data += "message="+textarea.val();
+        $.ajax({
+            url: "send_message/",
+            data: {"thread_id": thread_id, "user_id": user_id, "message": textarea.val()},
+            type: "POST",
+            cache: false,
+        })
 
         textarea.val("");
 
-        var http_request = new getXmlHttpRequest();
-        http_request.open('POST', '/send_message/', true);
-        http_request.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded, charset=utf-8');
-        http_request.onreadystatechange = function() { // Ждём ответа от сервера
-            if (http_request.readyState == 4) { // Ответ пришёл
-                if(http_request.status == 200) { // Сервер вернул код 200 (что хорошо)
-                    show();
-                    scroll_chat_window();
-                }
-            }
-        };
-        http_request.send(data);
-
-        show();
-        scroll_chat_window();
     }
 
+    $("button").click(send_message);
 
-    $("div#chat form#chat-form div#compose button").click(send_message);
-
-    $("input#id_text").keydown(function (e) {
+    $("#id_text").keydown(function (e) {
         // Enter
         if (e.keyCode == 13) {
             send_message();
+            e.preventDefault();
         }
     });
 }

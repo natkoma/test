@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 
 from datetime import datetime
+from time import sleep
 
 from django.shortcuts import render_to_response
 from django.http import HttpResponse
@@ -64,7 +65,7 @@ def chat_view(request):
     now = datetime.now()
     messages = thread.message_set.filter(
         datetime__lte=now
-    ).order_by("-datetime", "-id")[:20]
+    ).order_by("-datetime", "-id")[:30]
 
     return render_to_response(
         'chat.html',
@@ -89,21 +90,29 @@ def messages_view(request):
 
     thread = Thread.objects.get_or_create(owner=user)[0]
 
-    now = datetime.now()
-    messages = thread.message_set.filter(
-        datetime__lte=now
-    ).order_by("-datetime", "-id")
+    for i in range(20):
+        messages = thread.message_set.all()
 
-    limit = request.GET.get("limit")
-    if limit:
-        messages = messages[:limit]
+        since = request.GET.get('since')
+        if since:
+            seconds, milliseconds = divmod(int(since), 1000)
+            since = datetime.fromtimestamp(seconds).replace(microsecond=milliseconds * 1000)
+            messages = messages.filter(datetime__gte=since)
+
+        now = datetime.now()
+        messages = messages.filter(datetime__lte=now)
+
+        if messages.exists():
+            break
+
+        sleep(0.5)
 
     return render_to_response(
         'messages.html',
         {
             "thread_id": thread.id,
             "user": user,
-            "messages": messages,
+            "messages": messages.order_by("-datetime", "-id"),
         },
         context_instance=RequestContext(request)
     )
