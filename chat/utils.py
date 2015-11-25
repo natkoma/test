@@ -39,7 +39,7 @@ def get_site_title(message):
     u"""
     Получает заголовок сайта.
     """
-    text = u"В запросе нет или неккоректно задан адрес сайта"
+    text = u"В запросе нет или некорректно задан адрес сайта"
     url = message.urls[0] if message.urls else None
     if url:
         try:
@@ -53,7 +53,7 @@ def get_sites_title(message):
     u"""
     Получает заголовки сайтов.
     """
-    text = u"В запросе нет или неккоректно заданы адреса сайтов"
+    text = u"В запросе нет или некорректно заданы адреса сайтов"
     titles = []
     for url in message.urls:
         try:
@@ -69,7 +69,7 @@ def get_site_h1(message):
     u"""
     Получает H1 сайта.
     """
-    text = u"В запросе нет или неккоректно задан адрес сайта"
+    text = u"В запросе нет или некорректно задан адрес сайта"
     url = message.urls[0] if message.urls else None
     if url:
         try:
